@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, {
     scrollTo,
     useAnimatedReaction,
     useAnimatedRef,
     useSharedValue,
+    withRepeat,
+    withTiming,
 } from "react-native-reanimated";
 
 const iconDataSets = {
@@ -46,23 +48,38 @@ const smoothInfiniteScroll = ({
 }: SmoothInfiniteScrollProps) => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollY = useSharedValue(0);
+
   const iconData = iconDataSets[iconSet];
-  const items = [...iconData, ...iconData]; // Repeat to ensure smooth looping
+  const items = [...iconData, ...iconData];
   const totalContentHeight = iconData.length * ITEM_HEIGHT;
 
-  useEffect(() => {
-    if (scrollDirection === "up") {
-      scrollY.value = totalContentHeight;
-    } else {
-      scrollY.value = 0;
-    }
-    const interval = setInterval(() => {
-      const increment = SCROLL_SPEED * (scrollDirection === "up" ? -1 : 1);
-      scrollY.value += increment;
-    }, 1000);
+  // Calculate total wrap height including gaps between items
+  // Each item has a gap after it (except conceptually the last, but we're wrapping)
+  const totalWrapHeight = totalContentHeight + iconData.length * GAP;
 
-    return () => clearInterval(interval);
-  }, [scrollDirection]);
+  useEffect(() => {
+    // Calculate duration based on SCROLL_SPEED and total distance
+    const duration = (totalWrapHeight / SCROLL_SPEED) * 1000; // convert to milliseconds
+
+    if (scrollDirection === "down") {
+      // Start at 0, animate to totalWrapHeight
+      scrollY.value = 0;
+      scrollY.value = withRepeat(
+        withTiming(totalWrapHeight, { duration }),
+        -1, // infinite repeats
+        false, // don't reverse
+      );
+    } else {
+      // Start at totalWrapHeight, animate to 0
+      scrollY.value = totalWrapHeight;
+      scrollY.value = withRepeat(
+        withTiming(0, { duration }),
+        -1, // infinite repeats
+        false, // don't reverse
+      );
+    }
+  }, [scrollDirection, totalWrapHeight]);
+
   useAnimatedReaction(
     () => scrollY.value,
     (y) => {
@@ -86,14 +103,14 @@ const smoothInfiniteScroll = ({
 
   return (
     <Animated.ScrollView
-      ref={scrollRef}
-      showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.container}
+      ref={scrollRef}
       scrollEnabled={false}
+      showsVerticalScrollIndicator={false}
     >
-      {items.map((item, index) => (
+      {items.map((item, idx) => (
         <View
-          key={index}
+          key={idx}
           style={[styles.iconContainer, { backgroundColor: item.color }]}
         >
           <Text style={{ fontSize: 40 }}>{item.emoji}</Text>
@@ -102,19 +119,20 @@ const smoothInfiniteScroll = ({
     </Animated.ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     gap: 10,
     paddingVertical: 20,
   },
   iconContainer: {
-    width: 140,
+    width: 160,
     height: ITEM_HEIGHT,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
     marginHorizontal: 5,
-    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+    boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)",
   },
 });
 export default smoothInfiniteScroll;
