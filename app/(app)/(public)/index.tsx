@@ -3,6 +3,7 @@ import GoogleAuthButton from "@/components/auth/googleAuthButton";
 import SmoothInfiniteScroll from "@/components/smoothInfiniteScroll";
 import { Fonts } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
 import {
   Image,
   Linking,
@@ -58,9 +59,11 @@ export default function Index() {
             <GoogleAuthButton />
           </Animated.View>
           <Animated.View entering={FadeInDown.delay(300)}>
-            <TouchableOpacity style={styles.otherButton}>
-              <Text style={styles.otherButtonText}> Other Options</Text>
-            </TouchableOpacity>
+            <Link href={"/(app)/(public)/otherOptions"} asChild>
+              <TouchableOpacity style={styles.otherButton}>
+                <Text style={styles.otherButtonText}> Other Options</Text>
+              </TouchableOpacity>
+            </Link>
           </Animated.View>
         </View>
         <Animated.View

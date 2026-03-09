@@ -11,6 +11,18 @@ const Layout = () => {
           contentStyle: { backgroundColor: "#fff" },
         }}
       />
+      <Stack.Screen
+        name="otherOptions"
+        options={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#fff" },
+          presentation: "formSheet",
+          headerShadowVisible: false,
+          title: "",
+          sheetAllowedDetents: [0.6],
+          sheetCornerRadius: 20,
+        }}
+      />
     </Stack>
   );
 };
