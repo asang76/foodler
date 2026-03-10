@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, {
-    scrollTo,
-    useAnimatedReaction,
-    useAnimatedRef,
-    useSharedValue,
-    withRepeat,
-    withTiming,
+  scrollTo,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useSharedValue,
+  withRepeat,
+  withTiming,
 } from "react-native-reanimated";
 
 const iconDataSets = {
@@ -78,7 +78,7 @@ const smoothInfiniteScroll = ({
         false, // don't reverse
       );
     }
-  }, [scrollDirection, totalWrapHeight]);
+  }, [scrollDirection]);
 
   useAnimatedReaction(
     () => scrollY.value,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   iconContainer: {
-    width: 160,
+    width: 150,
     height: ITEM_HEIGHT,
     justifyContent: "center",
     alignItems: "center",
